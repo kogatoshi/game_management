@@ -1,4 +1,40 @@
 {% extends 'layout.html' %}
 {% block body %}
-  <h1>{{title}}</h1>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand">HelloFlask</a>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><p class="navbar-text">Signed in as: <a href="#" class="navbar-link" id="username">{{ session.username }}</a></p></li>
+        <li><a href="/logout" id="logout">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+        <h1>Hardware</h1>
+        <ul>
+          {% for hard_content in hard_contents %}
+            <div class="col-sm-4">
+              <li><a href="{{url_for('show_content', name=hard_content.name)}}">{{hard_content.name}}</a></li>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        <h1>Software</h1>
+        <ul>
+          {% for soft_content in soft_contents %}
+            <div class="col-sm-3">
+              <li><a href="{{url_for('show_content', name=soft_content.title)}}">{{soft_content.title}}</a></li>
+            </div>
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="../static/js/sample.js"></script>
 {% endblock %}
