@@ -83,8 +83,8 @@ def addsoft():
     game = Games(title=title)
     hards = []
     for hard in hardnumbers:
-        name = session.query(Hardware).filter_by(id=hard).one().name
-        hards.append(Hardware(name=name))
+        name = session.query(Hardware).filter_by(id=hard).one()
+        hards.append(name)
     game.hardwares.extend(hards)
 
     session.add(game)
