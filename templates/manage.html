@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block body %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">HelloFlask</a>
+    </div>
+  </div>
+</nav>
+<div class="container">
+  <form id="addSoft" action="/addsoft" method="post">
+    <input type="text" name="softName" placeholder="ソフト名" />
+    {% for hard_content in hard_contents %}
+      <label><input type="checkbox" name="hardNumbers" value="{{ hard_content.id }}" />{{ hard_content.name }}</label>
+    {% endfor %}
+    <input type="submit" value="送信" />
+  </form>
+  <form id="addHard">
+  </form>
+  <table class="table">
+    <tr>
+      <th>ソフト名</th>
+      <th>ハード名</th>
+      <th></th>
+    </tr>
+    {% for soft_content in soft_contents %}
+    <tr>
+      <td>{{ soft_content.title }}</td>
+      <td>{{ soft_content.hardware }}</td>
+      <td><form action="/deletesoft"><input type="submit" value="削除" /></form></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
