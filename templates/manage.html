@@ -19,21 +19,30 @@
     <input type="text" name="hardName" placeholder="ハード名" />
     <input type="submit" value="送信" />
   </form>
-  <table class="table">
-    <tr>
-      <th>ソフト名</th>
-      <th>ハード名</th>
-      <th></th>
-    </tr>
-    {% for soft_content in soft_contents %}
-    <tr>
-      <td>{{ soft_content.title }}</td>
-      {% for soft_hard in soft_content.hardwares %}
-      <td>{{ soft_hard.name }}</td>
-      {% endfor %}
-      <td><form action="/deletesoft"><input type="submit" value="削除" /></form></td>
-    </tr>
-    {% endfor %}
-  </table>
+  <div class="panel panel-success">
+    <div class="panel-heading">ソフト一覧</div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <tr>
+          <th>ソフト名</th>
+          <th>ハード名</th>
+          <th></th>
+        </tr>
+        {% for soft_content in soft_contents %}
+          {% for soft_hard in soft_content.hardwares %}
+          <tr>
+            {% if loop.first %}
+            <td rowspan="{{ soft_content.hardwares|count }}">{{ soft_content.title }}</td>
+            {% endif %}
+            <td>{{ soft_hard.name }}</td>
+            {% if loop.first %}
+            <td rowspan="{{ soft_content.hardwares|count }}"><form action="/deletesoft"><input type="submit" value="削除" /></form></td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        {% endfor %}
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, abort, request
 from flask import redirect, url_for
 from flask_httpauth import HTTPDigestAuth
-from game.models import Hardware, Games
+from game.models import Hardware, Games, User
 from game.database import db_session, engine
 import os
 
@@ -29,13 +29,11 @@ def home():
 
 
 # ログイン
-@app.route('/login')
+@app.route('/login', methods=['POST'])
 @auth.login_required
 def login():
-    if auth.username() == "tenmaendou":
-        return redirect(url_for('manage'))
-    else:
-        return render_template("login.html", username=auth.username())
+    users = session.query(User).all()
+    return "ok"
 
 
 # ソフト・ハードの一覧
@@ -49,6 +47,35 @@ def game():
                 soft_contents=soft_contents,
                 username=auth.username()
             )
+
+
+@app.route("/signup_conf", methods=['POST'])
+def signup_conf():
+    new_username = request.form['new_username']
+    email = request.form['email']
+    password = request.form['password']
+    return render_template(
+                'signup_conf.html',
+                new_username=new_username,
+                email=email,
+            )
+
+
+@app.route("/signup")
+def signup():
+    return render_template('signup.html')
+
+
+@app.route("/adduser", methods=['POST'])
+def adduser():
+    new_username = signup_conf.new_username
+    email = signup_conf.email
+    password = signup_conf.password
+    engine.execute(
+        'insert into users values \
+        (0, "%s", "%s", "%s")' % (new_username, email, password)
+    )
+    return redirect(url_for('login'))
 
 
 # 詳細ページ

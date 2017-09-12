@@ -6,10 +6,25 @@ body {
   text-align: center;
 }
 
-table {
-  margin-top: 50px;
+form#addHard,#addSoft {
+  margin-top: 25px;
+  margin-bottom: 25px
 }
 
-form#addHard,#addSoft {
-  margin-top: 50px;
+#signupConf {
+  background-color: white;
+  text-align: center;
+  padding-bottom: 50px;
+}
+
+#signupConf th {
+  text-align: center;
+}
+
+#signupConf a {
+  color: black;
+}
+
+#signupForm {
+  text-align: center;
 }
