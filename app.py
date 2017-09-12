@@ -2,7 +2,7 @@ from flask import Flask, render_template, abort, request
 from flask import redirect, url_for
 from flask_httpauth import HTTPDigestAuth
 from game.models import Hardware, Games
-from game.database import db_session
+from game.database import db_session, engine
 import os
 
 
@@ -63,14 +63,16 @@ def show_content(name):
 # 管理ページ
 @app.route("/manage")
 def manage():
-    hard_contents = Hardware.query.all()
-    soft_contents = Games.query.all()
-    hard_contents = Hardware.query.all()
-    return render_template(
-                "manage.html",
-                hard_contents=hard_contents,
-                soft_contents=soft_contents,
-            )
+    hard_contents = session.query(Hardware).all()
+    soft_contents = session.query(Games).all()
+    if hard_contents:
+        return render_template(
+                    "manage.html",
+                    hard_contents=hard_contents,
+                    soft_contents=soft_contents,
+                )
+    else:
+        return "ハードを登録してください"
 
 
 # ソフトをデータベースに追加
@@ -89,16 +91,14 @@ def addsoft():
 
     session.add(game)
     session.commit()
-    return "ok"  # redirect(url_for('manage'))
-    """
-    bf4 = Games(title='Battlefield3')
-    ps3 = session.query(Hardware).filter_by(id=3).one()
-    ps4 = session.query(Hardware).filter_by(id=4).one()
-    bf4.hardwares.extend([ps3, ps4])
-    session.add(bf4)
-    session.commit()
-    return "ok"
-    """
+    return redirect(url_for('manage'))
+
+
+@app.route("/addhard", methods=["POST"])
+def addhard():
+    name = request.form["hardName"]
+    engine.execute('insert into hardware values (0, "%s")' % (name))
+    return redirect(url_for('manage'))
 
 
 if __name__ == "__main__":

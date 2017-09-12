@@ -5,3 +5,11 @@ body {
 .welcome {
   text-align: center;
 }
+
+table {
+  margin-top: 50px;
+}
+
+form#addHard,#addSoft {
+  margin-top: 50px;
+}

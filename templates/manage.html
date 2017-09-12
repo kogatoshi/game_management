@@ -15,7 +15,9 @@
     {% endfor %}
     <input type="submit" value="送信" />
   </form>
-  <form id="addHard">
+  <form id="addHard" action="/addhard" method="post">
+    <input type="text" name="hardName" placeholder="ハード名" />
+    <input type="submit" value="送信" />
   </form>
   <table class="table">
     <tr>
@@ -26,7 +28,9 @@
     {% for soft_content in soft_contents %}
     <tr>
       <td>{{ soft_content.title }}</td>
-      <td>{{ soft_content.hardware }}</td>
+      {% for soft_hard in soft_content.hardwares %}
+      <td>{{ soft_hard.name }}</td>
+      {% endfor %}
       <td><form action="/deletesoft"><input type="submit" value="削除" /></form></td>
     </tr>
     {% endfor %}
