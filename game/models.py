@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, synonym
 from game.database import Base
-
+from werkzeug import check_password_hash, generate_password_hash
 
 games_hardware_table = Table(
                     'games_hardwares',
@@ -32,7 +32,7 @@ class Games(Base):
             secondary=games_hardware_table
     )
 
-    def __init__(self, title=None, hardware=None):
+    def __init__(self, title, hardwareｓ):
         self.title = title
         self.hardwares = hardwares
 
@@ -45,7 +45,7 @@ class Hardware(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(32), unique=True)
 
-    def __init__(self, name=None):
+    def __init__(self, name):
         self.name = name
 
     def __repr__(self):
@@ -55,9 +55,9 @@ class Hardware(Base):
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String(16), unique=True)
-    address = Column(String(128), unique=True)
-    password = Column(String(32))
+    username = Column(String(16), unique=True, nullable=False)
+    address = Column(String(128), unique=True, nullable=False)
+    _password = Column('password', String(256), nullable=False)
 
     games = relationship(
             'Games',
@@ -67,10 +67,33 @@ class User(Base):
             secondary=user_game_table
     )
 
-    def __init__(self, name=None):
+    def __init__(self, username, address, password):
         self.username = username
         self.address = address
         self.password = password
+
+    def _get_password(self):
+        return self._password
+
+    def _set_password(self, password):
+        if password:
+            password = password.strip()
+        self._password = generate_password_hash(password)
+    password_descriptor = property(_get_password, _set_password)
+    password = synonym('_password', descriptor=password_descriptor)
+
+    def check_password(self, password):
+        password = password.strip()
+        if not password:
+            return False
+        return check_password_hash(self.password, password)
+
+    @classmethod
+    def authenticate(cls, query, address, password):
+        user = query(cls).filter(cls.address == address).first()
+        if user is None:
+            return None, False
+        return user, user.check_password(password)
 
     def __repr__(self):
         return '<User %r>' % (self.username)

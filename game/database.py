@@ -15,6 +15,7 @@ engine = create_engine(DATABASE, encoding='utf-8')
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
+session = db_session()
 Base = declarative_base()
 Base.query = db_session.query_property()
 

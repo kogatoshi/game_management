@@ -1,8 +1,7 @@
 from flask import Flask, render_template, abort, request
-from flask import redirect, url_for
+from flask import redirect, url_for, flash, session
 from flask_httpauth import HTTPDigestAuth
-from game.models import Hardware, Games, User
-from game.database import db_session, engine
+from game import database, models
 import os
 
 
@@ -10,16 +9,16 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 auth = HTTPDigestAuth()
 
-session = db_session()
+db_session = database.db_session()
 
-users = {"john": "hello", "susan": "bye", "tenmaendou": "tenma129"}
-
-
+"""
 @auth.get_password
 def get_pw(username):
+    users = session.query(User).all()
     if username in users:
         return users.get(username)
     return None
+"""
 
 
 # 最初のページ
@@ -29,18 +28,35 @@ def home():
 
 
 # ログイン
-@app.route('/login', methods=['POST'])
-@auth.login_required
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    users = session.query(User).all()
-    return "ok"
+    if request.method == 'POST':
+        user, authenticated = models.User.authenticate(
+                                db_session.query,
+                                request.form['email'],
+                                request.form['password']
+                            )
+        if authenticated:
+            session['user_id'] = user.id
+            flash('You were logged in')
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid email or password')
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    flash('You were logged out')
+    return redirect(url_for('login'))
 
 
 # ソフト・ハードの一覧
 @app.route("/game")
 def game():
-    hard_contents = Hardware.query.all()
-    soft_contents = Games.query.all()
+    hard_contents = models.Hardware.query.all()
+    soft_contents = models.Games.query.all()
     return render_template(
                 "game_list.html",
                 hard_contents=hard_contents,
@@ -58,6 +74,7 @@ def signup_conf():
                 'signup_conf.html',
                 new_username=new_username,
                 email=email,
+                password=password,
             )
 
 
@@ -68,20 +85,22 @@ def signup():
 
 @app.route("/adduser", methods=['POST'])
 def adduser():
-    new_username = signup_conf.new_username
-    email = signup_conf.email
-    password = signup_conf.password
-    engine.execute(
-        'insert into users values \
-        (0, "%s", "%s", "%s")' % (new_username, email, password)
-    )
-    return redirect(url_for('login'))
+    if request.method == 'POST':
+        user = models.User(
+                username=request.form['new_username'],
+                address=request.form['email'],
+                password=request.form['password']
+            )
+        db_session.add(user)
+        db_session.commit()
+        return redirect(url_for('login'))
+    return render_template('signup.html')
 
 
 # 詳細ページ
 @app.route("/<name>", methods=["GET"])
 def show_content(name):
-    content = Hardware.query.filter_by(name=name).first()
+    content = models.Hardware.query.filter_by(name=name).first()
     if content is None:
         abort(404)
     return render_template("show_content.html", content=content)
@@ -90,8 +109,8 @@ def show_content(name):
 # 管理ページ
 @app.route("/manage")
 def manage():
-    hard_contents = session.query(Hardware).all()
-    soft_contents = session.query(Games).all()
+    hard_contents = db_session.query(models.Hardware).all()
+    soft_contents = db_session.query(models.Games).all()
     if hard_contents:
         return render_template(
                     "manage.html",
@@ -109,22 +128,22 @@ def addsoft():
     title = request.form["softName"]
     # チェックボックスからハードウェアのリストを取得
     hardnumbers = request.form.getlist("hardNumbers")
-    game = Games(title=title)
+    game = models.Games(title=title)
     hards = []
     for hard in hardnumbers:
-        name = session.query(Hardware).filter_by(id=hard).one()
+        name = db_session.query(models.Hardware).filter_by(id=hard).one()
         hards.append(name)
     game.hardwares.extend(hards)
 
-    session.add(game)
-    session.commit()
+    db_session.add(game)
+    db_session.commit()
     return redirect(url_for('manage'))
 
 
 @app.route("/addhard", methods=["POST"])
 def addhard():
     name = request.form["hardName"]
-    engine.execute('insert into hardware values (0, "%s")' % (name))
+    database.engine.execute('insert into hardware values (0, "%s")' % (name))
     return redirect(url_for('manage'))
 
 
