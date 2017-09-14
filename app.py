@@ -38,8 +38,11 @@ def login():
                             )
         if authenticated:
             session['user_id'] = user.id
-            flash('You were logged in')
-            return redirect(url_for('home'))
+            if user.username == 'tenmaendou':
+                return redirect(url_for('manage'))
+            else:
+                flash('You were logged in')
+                return redirect(url_for('home'))
         else:
             flash('Invalid email or password')
     return render_template('login.html')
@@ -49,7 +52,7 @@ def login():
 def logout():
     session.pop('user_id', None)
     flash('You were logged out')
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 
 # ソフト・ハードの一覧
@@ -111,14 +114,11 @@ def show_content(name):
 def manage():
     hard_contents = db_session.query(models.Hardware).all()
     soft_contents = db_session.query(models.Games).all()
-    if hard_contents:
-        return render_template(
-                    "manage.html",
-                    hard_contents=hard_contents,
-                    soft_contents=soft_contents,
-                )
-    else:
-        return "ハードを登録してください"
+    return render_template(
+                "manage.html",
+                hard_contents=hard_contents,
+                soft_contents=soft_contents,
+            )
 
 
 # ソフトをデータベースに追加
@@ -128,22 +128,46 @@ def addsoft():
     title = request.form["softName"]
     # チェックボックスからハードウェアのリストを取得
     hardnumbers = request.form.getlist("hardNumbers")
-    game = models.Games(title=title)
-    hards = []
-    for hard in hardnumbers:
-        name = db_session.query(models.Hardware).filter_by(id=hard).one()
-        hards.append(name)
-    game.hardwares.extend(hards)
+    if title and hardnumbers:
+        game = models.Games(title=title)
+        hards = []
+        for hard in hardnumbers:
+            name = db_session.query(models.Hardware).filter_by(id=hard).one()
+            hards.append(name)
+        game.hardwares.extend(hards)
 
-    db_session.add(game)
-    db_session.commit()
+        db_session.add(game)
+        db_session.commit()
+        flash('%sを追加しました！' % (title))
+    else:
+        if title:
+            flash('ハードを選択してください')
+        if hardnumbers:
+            flash('ソフト名を入力してください')
     return redirect(url_for('manage'))
 
 
 @app.route("/addhard", methods=["POST"])
 def addhard():
     name = request.form["hardName"]
-    database.engine.execute('insert into hardware values (0, "%s")' % (name))
+    if name:
+        new_hard = models.Hardware(name=name)
+        db_session.add(new_hard)
+        db_session.commit()
+    else:
+        flash('入力してください')
+    return redirect(url_for('manage'))
+
+
+@app.route("/deletesoft", methods=["POST"])
+def deletesoft():
+    delsoft_id = list(request.form.keys())[0]
+    delsoft_title = \
+        db_session.query(models.Games).filter_by(id=delsoft_id).one()
+    # delete_soft = models.Games(title=delsoft_title, id=delsoft_id)
+    db_session.delete(delsoft_title)
+    db_session.commit()
+    flash('削除しました')
     return redirect(url_for('manage'))
 
 

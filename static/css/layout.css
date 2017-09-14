@@ -28,3 +28,13 @@ form#addHard,#addSoft {
 #signupForm {
   text-align: center;
 }
+
+.red_flush {
+  color: red;
+}
+
+.addsubmitbutton {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

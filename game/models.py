@@ -32,9 +32,8 @@ class Games(Base):
             secondary=games_hardware_table
     )
 
-    def __init__(self, title, hardwareｓ):
+    def __init__(self, title):
         self.title = title
-        self.hardwares = hardwares
 
     def __repr__(self):
         return '<Title %r>' % (self.title)

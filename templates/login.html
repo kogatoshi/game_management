@@ -1,15 +1,5 @@
 {% extends 'layout.html' %}
 {% block body %}
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand">HelloFlask</a>
-      </div>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/signup" data-toggle="modal">Sign up</a></li>
-      </ul>
-    </div>
-  </nav>
   <div class="container" >
     <form action="/login" method="post">
       <input type="text" name="email" placeholder="メールアドレス" maxlength="100" />
