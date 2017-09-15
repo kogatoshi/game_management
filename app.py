@@ -1,6 +1,7 @@
 from flask import Flask, render_template, abort, request
-from flask import redirect, url_for, flash, session
+from flask import redirect, url_for, flash, session, g
 from flask_httpauth import HTTPDigestAuth
+from functools import wraps
 from game import database, models
 import os
 
@@ -11,20 +12,36 @@ auth = HTTPDigestAuth()
 
 db_session = database.db_session()
 
-"""
-@auth.get_password
-def get_pw(username):
-    users = session.query(User).all()
-    if username in users:
-        return users.get(username)
-    return None
-"""
+
+def login_required(f):
+    @wraps(f)
+    def decorated_view(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for('login', next=request.path))
+        return f(*args, **kwargs)
+    return decorated_view
+
+
+@app.before_request
+def load_user():
+    user_id = session.get('user_id')
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = models.User.query.get(session['user_id'])
 
 
 # 最初のページ
 @app.route('/')
 def home():
-    return render_template("index.html")
+    hard_contents = models.Hardware.query.all()
+    soft_contents = models.Games.query.all()
+    return render_template(
+                "index.html",
+                hard_contents=hard_contents,
+                soft_contents=soft_contents,
+                username=auth.username()
+            )
 
 
 # ログイン
@@ -49,6 +66,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     session.pop('user_id', None)
     flash('You were logged out')
@@ -57,6 +75,7 @@ def logout():
 
 # ソフト・ハードの一覧
 @app.route("/game")
+@login_required
 def game():
     hard_contents = models.Hardware.query.all()
     soft_contents = models.Games.query.all()
@@ -68,6 +87,7 @@ def game():
             )
 
 
+"""
 @app.route("/signup_conf", methods=['POST'])
 def signup_conf():
     new_username = request.form['new_username']
@@ -79,6 +99,7 @@ def signup_conf():
                 email=email,
                 password=password,
             )
+"""
 
 
 @app.route("/signup")
@@ -87,6 +108,7 @@ def signup():
 
 
 @app.route("/adduser", methods=['POST'])
+@login_required
 def adduser():
     if request.method == 'POST':
         user = models.User(
@@ -111,6 +133,7 @@ def show_content(name):
 
 # 管理ページ
 @app.route("/manage")
+@login_required
 def manage():
     hard_contents = db_session.query(models.Hardware).all()
     soft_contents = db_session.query(models.Games).all()
@@ -123,6 +146,7 @@ def manage():
 
 # ソフトをデータベースに追加
 @app.route("/addsoft", methods=["POST"])
+@login_required
 def addsoft():
     # テキストボックスからソフトの名前を取得
     title = request.form["softName"]
@@ -148,6 +172,7 @@ def addsoft():
 
 
 @app.route("/addhard", methods=["POST"])
+@login_required
 def addhard():
     name = request.form["hardName"]
     if name:
@@ -160,6 +185,7 @@ def addhard():
 
 
 @app.route("/deletesoft", methods=["POST"])
+@login_required
 def deletesoft():
     delsoft_id = list(request.form.keys())[0]
     delsoft_title = \
