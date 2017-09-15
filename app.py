@@ -3,11 +3,15 @@ from flask import redirect, url_for, flash, session, g
 from flask_httpauth import HTTPDigestAuth
 from functools import wraps
 from game import database, models
+import logging
 import os
+import sys
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 auth = HTTPDigestAuth()
 
 db_session = database.db_session()
