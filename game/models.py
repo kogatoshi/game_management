@@ -19,6 +19,14 @@ user_game_table = Table(
                 )
 
 
+user_hard_table = Table(
+                    'users_hardwares',
+                    Base.metadata,
+                    Column('user_id', Integer, ForeignKey('users.id')),
+                    Column('hard_id', Integer, ForeignKey('hardware.id')),
+                )
+
+
 class Games(Base):
     __tablename__ = 'games'
     id = Column(Integer, primary_key=True)
@@ -64,6 +72,14 @@ class User(Base):
             uselist=True,
             backref='users',
             secondary=user_game_table
+    )
+
+    hardwares = relationship(
+            'Hardware',
+            order_by='Hardware.id',
+            uselist=True,
+            backref='users',
+            secondary=user_hard_table
     )
 
     def __init__(self, username, address, password):

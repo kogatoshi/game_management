@@ -13,6 +13,51 @@
       </div>
     {% endfor %}
   </div>
+  <div class="container">
+    <div class="row">
+        <h1>Hardware</h1>
+        <ul>
+          {% for hard_content in hard_contents %}
+            <div class="col-sm-6">
+              <li>
+                <a class="hardNameLink" href="{{url_for('show_content', name=hard_content.name)}}">{{hard_content.name}}</a>
+                  <form action="{{ url_for('possess_hard') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <input type="hidden" name="hard_id" value="{{hard_content.id}}" />
+                    <img class="hardImage" src="{{ url_for('static', filename=hard_content.name+'.png') }}" alt="{{hard_content.name}}"/>
+                    {% if hard_content.id not in possess_hards %}
+                      <button type="submit" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </button>
+                    {% endif %}
+                  </form>
+              </li>
+            </div>
+          {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        <h1>Software</h1>
+        <ul>
+          {% for soft_content in soft_contents %}
+            <div class="col-sm-4">
+              <li>
+                <a class="softNameLink" href="{{url_for('show_content', name=soft_content.title)}}">{{soft_content.title}}</a>
+                  <form action="{{ url_for('possess_soft') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <input type="hidden" name="soft_id" value="{{soft_content.id}}" />
+                    {% if soft_content.id not in possess_softs %}
+                      <button type="submit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </button>
+                    {% endif %}
+                  </form>
+              </li>
+            </div>
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

@@ -3,6 +3,7 @@
 <div class="container">
   <div class="row addSoft">
     <form id="addSoft" action="/addsoft" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class="form-group">
         <input type="text" class="form-control" name="softName" placeholder="ソフト名" />
       </div>
@@ -31,6 +32,7 @@
   {% endfor %}
   <div class="row addHard">
     <form id="addHard" action="/addhard" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <input type="text" class="form-control" name="hardName" placeholder="ハード名" />
       <div class="addsubmitbutton col-sm-12">
         <input type="submit" class="btn btn-default" value="送信" />
@@ -54,8 +56,8 @@
               {% endif %}
                 <td>{{ soft_hard.name }}</td>
               {% if loop.first %}
-                <td rowspan="{{ soft_content.hardwares|count }}">
-                  <form action="/deletesoft" method="post">
+                <td rowspan="{{ soft_content.hardwares|count }}"  class="deleteButton">
+                  <form action="/deletesoft" method="post" />
                     <input type="submit" name="{{soft_content.id}}" value="削除" />
                   </form>
                 </td>

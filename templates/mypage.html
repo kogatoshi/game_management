@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block body %}
+  <div class="container">
+    <h1>マイページ</h1>
+    <h2>あなたが持っているハード</h2>
+    {% for possess_hard in possess_hards %}
+      <ul>
+        {{possess_hard}}
+      </ul>
+    {% endfor %}
+    <h2>あなたが持っているソフト</h2>
+    {% for possess_soft in possess_softs %}
+      <ul>
+        {{possess_soft}}
+      </ul>
+    {% endfor %}
+  </div>
+{% endblock %}

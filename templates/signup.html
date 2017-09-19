@@ -8,6 +8,7 @@
   </div>
   <div class="row" id="signupForm">
     <form action="/adduser" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class="form-group">
         <label>ユーザー名</label>
         <input type="text" class="form-control" name="new_username" placeholder="user name" required />

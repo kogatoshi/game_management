@@ -6,25 +6,28 @@
     <meta content="width=device-width, initial-scale=1" name="viewport"></meta>
     <title>ゲーム管理サイト</title>
     <!-- Bootstrap CDN -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"> -->
     <link rel="stylesheet" href="../static/css/layout.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </head>
   <body>
     {% if session.user_id %}
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-inverse">
         <div class="container-fluid">
           <div class="navbar-header">
             <a href="{{ url_for('home') }}" class="navbar-brand">Gamesoft Management</a>
           </div>
           <ul class="nav navbar-nav navbar-right">
+            <li><a href="/mypage" data-toggle="modal">logged in:{{session.username}}</a></li>
             <li><a href="/logout" data-toggle="modal">logout</a></li>
           </ul>
         </div>
       </nav>
     {% else %}
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-inverse">
         <div class="container-fluid">
           <div class="navbar-header">
             <a href="{{ url_for('home') }}" class="navbar-brand">Gamesoft Management</a>

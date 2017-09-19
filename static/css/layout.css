@@ -42,10 +42,15 @@ form#addHard,#addSoft {
   margin-bottom: 30px;
 }
 
-.navbar-default {
-  background-color: rgb(42, 186, 240);
+.deleteButton {
+  text-align: center;
 }
 
-.navbar-default .navbar-nav > li > a {
-  color: #000000;
+.hardNameLink {
+  font-size: 150%;
+}
+
+.hardImage {
+  width: 200px;
+  height: 100px;
 }

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, abort, request
 from flask import redirect, url_for, flash, session, g
 from flask_httpauth import HTTPDigestAuth
+from flask_wtf.csrf import CSRFProtect
 from functools import wraps
 from game import database, models
 import logging
@@ -13,6 +14,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 auth = HTTPDigestAuth()
+csrf = CSRFProtect(app)
 
 db_session = database.db_session()
 
@@ -21,6 +23,7 @@ def login_required(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
         if g.user is None:
+            flash("ログインしてください")
             return redirect(url_for('login', next=request.path))
         return f(*args, **kwargs)
     return decorated_view
@@ -38,13 +41,26 @@ def load_user():
 # 最初のページ
 @app.route('/')
 def home():
-    hard_contents = models.Hardware.query.all()
-    soft_contents = models.Games.query.all()
+    hard_contents = db_session.query(models.Hardware).all()
+    soft_contents = db_session.query(models.Games).all()
+    possess_hards_id = db_session.query(models.user_hard_table).\
+        filter_by(user_id=session['user_id'])
+    possess_softs_id = db_session.query(models.user_game_table).\
+        filter_by(user_id=session['user_id'])
+    possess_hards = []
+    possess_softs = []
+    for ph in possess_hards_id:
+        poss = db_session.query(models.Hardware).filter_by(id=ph[1]).one().id
+        possess_hards.append(poss)
+    for ps in possess_softs_id:
+        poss = db_session.query(models.Games).filter_by(id=ps[1]).one().id
+        possess_softs.append(poss)
     return render_template(
                 "index.html",
                 hard_contents=hard_contents,
                 soft_contents=soft_contents,
-                username=auth.username()
+                possess_hards=possess_hards,
+                possess_softs=possess_softs,
             )
 
 
@@ -74,7 +90,7 @@ def login():
 def logout():
     session.pop('user_id', None)
     flash('You were logged out')
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 
 # ソフト・ハードの一覧
@@ -112,7 +128,6 @@ def signup():
 
 
 @app.route("/adduser", methods=['POST'])
-@login_required
 def adduser():
     if request.method == 'POST':
         user = models.User(
@@ -126,8 +141,54 @@ def adduser():
     return render_template('signup.html')
 
 
+@app.route("/possess_hard", methods=['POST'])
+def possess_hard():
+    hard_id = request.form['hard_id']
+    user = models.User.query.get(session['user_id'])
+    hard = models.Hardware.query.get(hard_id)
+    user.hardwares.append(hard)
+    current_db_sessions = db_session.object_session(user)
+    current_db_sessions.add(user)
+    current_db_sessions.commit()
+    return redirect(url_for('home'))
+
+
+@app.route("/possess_soft", methods=['POST'])
+def possess_soft():
+    soft_id = request.form['soft_id']
+    user = models.User.query.get(session['user_id'])
+    soft = models.Games.query.get(soft_id)
+    user.games.append(soft)
+    current_db_sessions = db_session.object_session(user)
+    current_db_sessions.add(user)
+    current_db_sessions.commit()
+    return redirect(url_for('home'))
+
+
+@app.route("/mypage")
+def mypage():
+    possess_hards_id = db_session.query(models.user_hard_table).\
+        filter_by(user_id=session['user_id'])
+    possess_softs_id = db_session.query(models.user_game_table).\
+        filter_by(user_id=session['user_id'])
+    possess_hards = []
+    possess_softs = []
+    for ph in possess_hards_id:
+        poss = db_session.query(models.Hardware).filter_by(id=ph[1]).one().name
+        possess_hards.append(poss)
+    for ps in possess_softs_id:
+        poss = db_session.query(models.Games).filter_by(id=ps[1]).one().title
+        possess_softs.append(poss)
+    return render_template(
+                'mypage.html',
+                possess_hards=possess_hards,
+                possess_softs=possess_softs,
+            )
+
+
 # 詳細ページ
 @app.route("/<name>", methods=["GET"])
+@login_required
 def show_content(name):
     content = models.Hardware.query.filter_by(name=name).first()
     if content is None:
