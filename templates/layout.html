@@ -13,32 +13,43 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </head>
+
   <body>
-    {% if session.user_id %}
-      <nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <a href="{{ url_for('home') }}" class="navbar-brand">Gamesoft Management</a>
-          </div>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/mypage" data-toggle="modal">logged in:{{session.username}}</a></li>
-            <li><a href="/logout" data-toggle="modal">logout</a></li>
-          </ul>
-        </div>
-      </nav>
-    {% else %}
-      <nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <a href="{{ url_for('home') }}" class="navbar-brand">Gamesoft Management</a>
-          </div>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/login" data-toggle="modal">login</a></li>
-            <li><a href="/signup" data-toggle="modal">Sign up</a></li>
-          </ul>
-        </div>
-      </nav>
-    {% endif %}
-    {% block body %} {% endblock %}
+    <div class="content">
+      <div class="content-inside">
+        {% if session.user_id %}
+          <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a href="{{ url_for('home') }}" class="navbar-brand">Gamesoft Management</a>
+              </div>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="/mypage" data-toggle="modal">logged in:{{session.username}}</a></li>
+                <li><a href="/logout" data-toggle="modal">logout</a></li>
+              </ul>
+            </div>
+          </nav>
+        {% else %}
+          <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a href="{{ url_for('home') }}" class="navbar-brand">Gamesoft Management</a>
+              </div>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="/login" data-toggle="modal">login</a></li>
+                <li><a href="/signup" data-toggle="modal">Sign up</a></li>
+              </ul>
+            </div>
+          </nav>
+        {% endif %}
+        {% block body %} {% endblock %}
+      </div>
+    </div>
+    <footer class="footer">
+      <address>
+        兵庫県神戸市
+      </address>
+    </footer>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/home.js') }}"></script>
   </body>
 </html>

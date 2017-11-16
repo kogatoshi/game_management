@@ -1,0 +1,5 @@
+{% extends 'layout.html' %}
+{% block body %}
+  <h1>{{hard.name}}</h1>
+  <img class="hardImage" src="{{ url_for('static', filename='img/' + hard.name + '.png') }}" alt="{{hard.name}}"/>
+{% endblock %}

@@ -1,30 +1,55 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime
 from sqlalchemy.orm import relationship, synonym
 from game.database import Base
 from werkzeug import check_password_hash, generate_password_hash
 
 games_hardware_table = Table(
-                    'games_hardwares',
-                    Base.metadata,
-                    Column('game_id', Integer, ForeignKey('games.id')),
-                    Column('hard_id', Integer, ForeignKey('hardware.id')),
-                )
+                'games_hardwares',
+                Base.metadata,
+                Column('game_id', Integer, ForeignKey('games.id')),
+                Column('hard_id', Integer, ForeignKey('hardware.id')),
+            )
 
 
 user_game_table = Table(
-                    'users_games',
-                    Base.metadata,
-                    Column('user_id', Integer, ForeignKey('users.id')),
-                    Column('game_id', Integer, ForeignKey('games.id')),
-                )
+                'users_games',
+                Base.metadata,
+                Column('user_id', Integer, ForeignKey('users.id')),
+                Column('game_id', Integer, ForeignKey('games.id')),
+            )
 
 
 user_hard_table = Table(
-                    'users_hardwares',
-                    Base.metadata,
-                    Column('user_id', Integer, ForeignKey('users.id')),
-                    Column('hard_id', Integer, ForeignKey('hardware.id')),
-                )
+                'users_hardwares',
+                Base.metadata,
+                Column('user_id', Integer, ForeignKey('users.id')),
+                Column('hard_id', Integer, ForeignKey('hardware.id')),
+            )
+
+
+hard_review_table = Table(
+                'hard_review',
+                Base.metadata,
+                Column('hard_id', Integer, ForeignKey('hardware.id')),
+                Column('hardreview_id', Integer, ForeignKey('hardreview.id'))
+            )
+
+
+hardreview_user_table = Table(
+                'users_hardreviews',
+                Base.metadata,
+                Column('user_id', Integer, ForeignKey('users.id')),
+                Column('hardreview_id', Integer, ForeignKey('hardreview.id'))
+            )
+
+
+softreview_user_table = Table(
+                'users_softreviews',
+                Base.metadata,
+                Column('user_id', Integer, ForeignKey('users.id')),
+                Column('softreview_id', Integer, ForeignKey('softreview.id'))
+            )
 
 
 class Games(Base):
@@ -52,6 +77,14 @@ class Hardware(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(32), unique=True)
 
+    review = relationship(
+            'Hardreview',
+            order_by='Hardreview.id',
+            uselist=True,
+            backref='hardware',
+            secondary=hard_review_table
+    )
+
     def __init__(self, name):
         self.name = name
 
@@ -65,6 +98,8 @@ class User(Base):
     username = Column(String(16), unique=True, nullable=False)
     address = Column(String(128), unique=True, nullable=False)
     _password = Column('password', String(256), nullable=False)
+    level = Column(Integer, default=1)
+    exp = Column(Integer, default=0)
 
     games = relationship(
             'Games',
@@ -112,3 +147,37 @@ class User(Base):
 
     def __repr__(self):
         return '<User %r>' % (self.username)
+
+
+class Softreview(Base):
+    __tablename__ = 'softreview'
+    id = Column(Integer, primary_key=True)
+    text = Column(String(1024), nullable=False)
+    star = Column(Integer, nullable=False)
+    good = Column(Integer, default=0, nullable=False)
+    sr_datetime = Column(DateTime, default=datetime.now(), nullable=False)
+
+    users = relationship(
+            'User',
+            order_by='User.id',
+            uselist=False,
+            backref='softreview',
+            secondary=softreview_user_table
+    )
+
+
+class Hardreview(Base):
+    __tablename__ = 'hardreview'
+    id = Column(Integer, primary_key=True)
+    text = Column(String(1024), nullable=False)
+    star = Column(Integer, nullable=False)
+    good = Column(Integer, default=0, nullable=False)
+    hr_datetime = Column(DateTime, default=datetime.now(), nullable=False)
+
+    users = relationship(
+            'User',
+            order_by='User.id',
+            uselist=False,
+            backref='hardreview',
+            secondary=hardreview_user_table
+    )

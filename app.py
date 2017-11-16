@@ -38,8 +38,12 @@ def load_user():
         g.user = models.User.query.get(session['user_id'])
 
 
-# 最初のページ
 @app.route('/')
+def top():
+    return render_template("index.html")
+
+
+@app.route('/home')
 def home():
     hard_contents = db_session.query(models.Hardware).all()
     soft_contents = db_session.query(models.Games).all()
@@ -56,7 +60,7 @@ def home():
         poss = db_session.query(models.Games).filter_by(id=ps[1]).one().id
         possess_softs.append(poss)
     return render_template(
-                "index.html",
+                "home.html",
                 hard_contents=hard_contents,
                 soft_contents=soft_contents,
                 possess_hards=possess_hards,
@@ -75,6 +79,7 @@ def login():
                             )
         if authenticated:
             session['user_id'] = user.id
+            session['username'] = user.username
             if user.username == 'tenmaendou':
                 return redirect(url_for('manage'))
             else:
@@ -107,21 +112,6 @@ def game():
             )
 
 
-"""
-@app.route("/signup_conf", methods=['POST'])
-def signup_conf():
-    new_username = request.form['new_username']
-    email = request.form['email']
-    password = request.form['password']
-    return render_template(
-                'signup_conf.html',
-                new_username=new_username,
-                email=email,
-                password=password,
-            )
-"""
-
-
 @app.route("/signup")
 def signup():
     return render_template('signup.html')
@@ -141,30 +131,57 @@ def adduser():
     return render_template('signup.html')
 
 
+# 所持しているハードウェアを追加
 @app.route("/possess_hard", methods=['POST'])
 def possess_hard():
     hard_id = request.form['hard_id']
-    user = models.User.query.get(session['user_id'])
-    hard = models.Hardware.query.get(hard_id)
-    user.hardwares.append(hard)
-    current_db_sessions = db_session.object_session(user)
-    current_db_sessions.add(user)
-    current_db_sessions.commit()
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    poshard = db_session.query(models.Hardware).filter_by(id=hard_id).one()
+    user.hardwares.append(poshard)
+    db_session.add(user)
+    db_session.commit()
     return redirect(url_for('home'))
 
 
+# 所持しているソフトを追加
 @app.route("/possess_soft", methods=['POST'])
 def possess_soft():
     soft_id = request.form['soft_id']
-    user = models.User.query.get(session['user_id'])
-    soft = models.Games.query.get(soft_id)
-    user.games.append(soft)
-    current_db_sessions = db_session.object_session(user)
-    current_db_sessions.add(user)
-    current_db_sessions.commit()
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    possoft = db_session.query(models.Games).filter_by(id=soft_id).one()
+    user.games.append(possoft)
+    db_session.add(user)
+    db_session.commit()
     return redirect(url_for('home'))
 
 
+# 所持していたソフトを削除
+@app.route("/del_possess_soft", methods=['POST'])
+def del_possess_soft():
+    game_id = request.form['soft_id']
+    user_id = session['user_id']
+    delposgame = db_session.query(models.Games).filter_by(id=game_id).one()
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    user.games.remove(delposgame)
+    db_session.commit()
+    return redirect(url_for('mypage'))
+
+
+# 所持していたハードを削除
+@app.route("/del_possess_hard", methods=['POST'])
+def del_possess_hard():
+    hard_id = request.form['hard_id']
+    user_id = session['user_id']
+    delposhard = db_session.query(models.Hardware).filter_by(id=hard_id).one()
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    user.games.remove(delposhard)
+    db_session.commit()
+    return redirect(url_for('mypage'))
+
+
+# マイページ
 @app.route("/mypage")
 def mypage():
     possess_hards_id = db_session.query(models.user_hard_table).\
@@ -187,13 +204,22 @@ def mypage():
 
 
 # 詳細ページ
-@app.route("/<name>", methods=["GET"])
+@app.route("/hardware/<name>", methods=["GET"])
 @login_required
-def show_content(name):
-    content = models.Hardware.query.filter_by(name=name).first()
-    if content is None:
+def show_content_hard(name):
+    hard = db_session.query(models.Hardware).filter_by(name=name).one()
+    if hard is None:
         abort(404)
-    return render_template("show_content.html", content=content)
+    return render_template("show_content_hard.html", hard=hard)
+
+
+@app.route("/software/<title>", methods=["GET"])
+@login_required
+def show_content_soft(title):
+    soft = db_session.query(models.Games).filter_by(title=title).one()
+    if soft is None:
+        abort(404)
+    return render_template("show_content_soft.html", soft=soft)
 
 
 # 管理ページ
@@ -252,7 +278,7 @@ def addhard():
 @app.route("/deletesoft", methods=["POST"])
 @login_required
 def deletesoft():
-    delsoft_id = list(request.form.keys())[0]
+    delsoft_id = list(request.form.keys())[1]
     delsoft_title = \
         db_session.query(models.Games).filter_by(id=delsoft_id).one()
     # delete_soft = models.Games(title=delsoft_title, id=delsoft_id)
@@ -263,4 +289,7 @@ def deletesoft():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,
+            host=os.getenv('IP', '0.0.0.0'),
+            port=int(os.getenv('PORT', 4444))
+            )
