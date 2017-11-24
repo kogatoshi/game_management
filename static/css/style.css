@@ -1,0 +1,162 @@
+.welcome {
+  text-align: center;
+}
+
+.choises {
+  display: flex;
+  border: solid black;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 20px;
+  width: 80%;
+  align-items: center;
+}
+
+.choises a {
+  height: 30px;
+  font-size: 20px;
+  width: 100%;
+}
+.choises a:hover {
+  background-color: rgba(0, 192, 255, 0.5);
+}
+
+.choises li {
+  list-style: none;
+}
+
+.loginForm {
+  margin: 10px;
+}
+
+form#addHard,#addSoft {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+#signupConf {
+  background-color: white;
+  text-align: center;
+  padding-bottom: 50px;
+}
+
+#signupConf th {
+  text-align: center;
+}
+
+#signupConf a {
+  color: black;
+}
+
+#signupForm {
+  text-align: center;
+}
+
+.red_flush {
+  color: red;
+}
+
+.addsubmitbutton {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.deleteButton {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.hardNameLink {
+  font-size: 150%;
+}
+
+.hardImage {
+  width: 200px;
+  height: 100px;
+}
+
+#showSoft {
+  margin-bottom: 50px;
+}
+
+.softContent {
+  margin-top: 20px;
+}
+
+.hardContent {
+  margin-bottom: 100px;
+}
+
+.nonBtn {
+  height: 30px;
+}
+
+.gameList {
+  padding-left: 50px;
+  height: 100%;
+}
+
+/* show_content_hard/soft.html */
+.hardContentOuter {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 10px;
+}
+
+.hardReviewForm, .softReviewForm {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.review {
+  margin-bottom: 10px;
+  border: dotted black;
+  padding: 10px;
+}
+
+.reviewStar {
+  margin-bottom: 20px;
+}
+
+#star1, #star2, #star3, #star4, #star5, #starDeactive {
+  box-shadow:  15px 6px 0 #696969, 15px 9px 0 #696969, 6px 12px 0 #696969, 9px 12px 0 #696969, 12px 12px 0 #696969, 15px 12px 0 #696969, 18px 12px 0 #696969, 21px 12px 0 #696969, 24px 12px 0 #696969, 12px 15px 0 #696969, 15px 15px 0 #696969, 18px 15px 0 #696969, 12px 18px 0 #696969, 15px 18px 0 #696969, 18px 18px 0 #696969, 9px 21px 0 #696969, 21px 21px 0 #696969, 6px 24px 0 #696969, 24px 24px 0 #696969;
+  height: 3px;
+  width: 3px;
+}
+
+#starActive {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+  height: 3px;
+  width: 3px;
+}
+
+.star1Out, .star2Out, .star3Out, .star4Out, .star5Out, .starOut {
+  height: 27px;
+  width: 27px;
+  float: left;
+}
+
+.star1Out:hover > #star1 {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+}
+
+.star2Out:hover > #star2 {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+}
+
+.star3Out:hover > #star3 {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+}
+
+.star4Out:hover > #star4 {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+}
+
+.star5Out:hover > #star5 {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+}
+
+.shine {
+  box-shadow:  15px 6px 0 #ffe200, 15px 9px 0 #ffe200, 6px 12px 0 #ffe200, 9px 12px 0 #ffe200, 12px 12px 0 #ffe200, 15px 12px 0 #ffe200, 18px 12px 0 #ffe200, 21px 12px 0 #ffe200, 24px 12px 0 #ffe200, 12px 15px 0 #ffe200, 15px 15px 0 #ffe200, 18px 15px 0 #ffe200, 12px 18px 0 #ffe200, 15px 18px 0 #ffe200, 18px 18px 0 #ffe200, 9px 21px 0 #ffe200, 21px 21px 0 #ffe200, 6px 24px 0 #ffe200, 24px 24px 0 #ffe200;
+}

@@ -1,21 +1,23 @@
 {% extends 'layout.html' %}
 {% block body %}
   <div class="container" >
-    {% for message in get_flashed_messages() %}
-      <div class="flash red_flush">
-        {{ message }}
-      </div>
-    {% endfor %}
-    <form action="/login" method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      <div class="form-group">
-        <input type="text" class="form-control" name="email" placeholder="メールアドレス" maxlength="100" />
-      </div>
-      <div class="form-group">
-        <input type="password" class="form-control" name="password" placeholder="パスワード" />
-      </div>
-      <input type="submit" class="form-control" value="ログイン" />
-    </form>
+    <div class="loginForm">
+      {% for message in get_flashed_messages() %}
+        <div class="flash red_flush">
+          {{ message }}
+        </div>
+      {% endfor %}
+      <form action="/login" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group">
+          <input type="text" class="form-control" name="email" placeholder="メールアドレス" maxlength="100" />
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" name="password" placeholder="パスワード" />
+        </div>
+        <input type="submit" class="form-control" value="ログイン" />
+      </form>
+    </div>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

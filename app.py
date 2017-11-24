@@ -44,6 +44,7 @@ def top():
 
 
 @app.route('/home')
+@login_required
 def home():
     hard_contents = db_session.query(models.Hardware).all()
     soft_contents = db_session.query(models.Games).all()
@@ -84,7 +85,7 @@ def login():
                 return redirect(url_for('manage'))
             else:
                 flash('You were logged in')
-                return redirect(url_for('home'))
+                return redirect(url_for('top'))
         else:
             flash('Invalid email or password')
     return render_template('login.html')
@@ -207,10 +208,21 @@ def mypage():
 @app.route("/hardware/<name>", methods=["GET"])
 @login_required
 def show_content_hard(name):
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
     hard = db_session.query(models.Hardware).filter_by(name=name).one()
+    done = False
     if hard is None:
         abort(404)
-    return render_template("show_content_hard.html", hard=hard)
+    for hr in hard.review:
+        if user == hr.users:
+            done = True
+    return render_template(
+                "show_content_hard.html",
+                hard=hard,
+                hardreview=hard.review,
+                done=done,
+            )
 
 
 @app.route("/software/<title>", methods=["GET"])
@@ -286,6 +298,23 @@ def deletesoft():
     db_session.commit()
     flash('削除しました')
     return redirect(url_for('manage'))
+
+
+@app.route("/hardreview", methods=["POST"])
+@login_required
+def hardreview():
+    # ユーザー情報取得
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    # if db_session.query(models.Hardreview).filter_by(users=user)
+    hard_name = request.form["hardname"]
+    hard = db_session.query(models.Hardware).filter_by(name=hard_name).one()
+    star = request.form["HardReviewStar"]
+    comment = request.form["text"]
+    hardreview = models.Hardreview(text=comment, star=star, users=user)
+    hard.review.append(hardreview)
+    db_session.commit()
+    return redirect("/hardware/%s" % hard_name)
 
 
 if __name__ == "__main__":
