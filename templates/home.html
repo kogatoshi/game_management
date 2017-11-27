@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
-<div class="container gameList">
+<div class="gameList">
   <div class="row">
     <div class="col-sm-12 col-md-12">
       <h1 class="text-center">ゲーム専用SNS</h1>
@@ -39,6 +39,7 @@
   </div>
   <div class="row" id="showSoft">
     <h2>ソフトウェア</h2>
+    <!--
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <a class="nav-link bg-primary" href="#all">All</a>
@@ -49,6 +50,7 @@
         </li>
       {% endfor %}
     </ul>
+    -->
     <ul>
       {% for soft_content in soft_contents %}
         <div class="col-sm-4 softContent">
@@ -61,6 +63,8 @@
                 <button type="submit" class="btn btn-default btn-sm" >
                   <span class="glyphicon glyphicon-plus"></span>
                 </button>
+              {% else %}
+                <div class="nonBtn"></div>
               {% endif %}
             </form>
           </li>

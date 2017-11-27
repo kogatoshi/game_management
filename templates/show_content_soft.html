@@ -1,24 +1,41 @@
 {% extends 'layout.html' %}
 {% block body %}
-<div class="container">
   <h1>{{soft.title}}</h1>
-  <div id="softReviewFormOuter">
-    <label>レビュー</label>
-    <div class="star1Out" onclick="Star(1)"><div id="star1"></div></div>
-    <div class="star2Out" onclick="Star(2)"><div id="star2"></div></div>
-    <div class="star3Out" onclick="Star(3)"><div id="star3"></div></div>
-    <div class="star4Out" onclick="Star(4)"><div id="star4"></div></div>
-    <div class="star5Out" onclick="Star(5)"><div id="star5"></div></div>
-    <form class="softReviewForm" action="/softreview" method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      <input id"#softReviewStar" type="hidden" name"#softReviewStar" value="" />
-      <div class="form-group">
-        <input type="text" class="form-control" name="text" placeholder="コメント" required />
+  <div class="softContentOuter"><div class="{{soft.title}}"></div></div>
+  {% if not done %}
+    <div id="softReviewFormOuter">
+      <label>レビュー</label>
+      <div class="star1Out" onclick="Star(1)"><div id="star1"></div></div>
+      <div class="star2Out" onclick="Star(2)"><div id="star2"></div></div>
+      <div class="star3Out" onclick="Star(3)"><div id="star3"></div></div>
+      <div class="star4Out" onclick="Star(4)"><div id="star4"></div></div>
+      <div class="star5Out" onclick="Star(5)"><div id="star5"></div></div>
+      <form class="softReviewForm" action="/softreview" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input id="softReviewStar" type="hidden" name="softReviewStar" value="" />
+        <input type="hidden" name="softname" value="{{soft.title}}" />
+        <div class="form-group">
+          <input type="text" class="form-control" name="text" placeholder="コメント" required />
+        </div>
+        <input type="submit" class="btn btn-default btn-sm" value="レビュー" />
+      </form>
+    </div>
+  {% endif %}
+  <div id="softReviews">
+    {% for sr in softreview %}
+      <div class="review">
+        <div class="reviewStar">
+          {% for _ in range(sr.star) %}
+            <div class="starOut"><div id="starActive"></div></div>
+          {% endfor %}
+          {% for _ in range(5 - sr.star) %}
+            <div class="starOut"><div id="starDeactive"></div></div>
+          {% endfor %}
+        </div><br>
+        <p>{{ sr.text }}</p>
       </div>
-      <input type="submit" class="btn btn-default btn-sm" value="レビュー" />
-    </form>
+    {% endfor %}
   </div>
-</div>
   <script>
       function Star(s){
         $("#star1").css('box-shadow', '15px 6px 0 #9e9e9e, 15px 9px 0 #9e9e9e, 6px 12px 0 #9e9e9e, 9px 12px 0 #9e9e9e, 12px 12px 0 #9e9e9e, 15px 12px 0 #9e9e9e, 18px 12px 0 #9e9e9e, 21px 12px 0 #9e9e9e, 24px 12px 0 #9e9e9e, 12px 15px 0 #9e9e9e, 15px 15px 0 #9e9e9e, 18px 15px 0 #9e9e9e, 12px 18px 0 #9e9e9e, 15px 18px 0 #9e9e9e, 18px 18px 0 #9e9e9e, 9px 21px 0 #9e9e9e, 21px 21px 0 #9e9e9e, 6px 24px 0 #9e9e9e, 24px 24px 0 #9e9e9e');

@@ -1,26 +1,24 @@
 {% extends 'layout.html' %}
 {% block body %}
-  <div class="container">
-    <div class="row">
-        <h1>Hardware</h1>
-        <ul>
-          {% for hard_content in hard_contents %}
-            <div class="col-sm-4">
-              <li><a href="{{url_for('show_content', name=hard_content.name)}}">{{hard_content.name}}</a></li>
-            </div>
-          {% endfor %}
-        </ul>
-    </div>
-    <div class="row">
-        <h1>Software</h1>
-        <ul>
-          {% for soft_content in soft_contents %}
-            <div class="col-sm-3">
-              <li><a href="{{url_for('show_content', name=soft_content.title)}}">{{soft_content.title}}</a></li>
-            </div>
-          {% endfor %}
-        </ul>
-    </div>
+  <div class="row">
+      <h1>Hardware</h1>
+      <ul>
+        {% for hard_content in hard_contents %}
+          <div class="col-sm-4">
+            <li><a href="{{url_for('show_content', name=hard_content.name)}}">{{hard_content.name}}</a></li>
+          </div>
+        {% endfor %}
+      </ul>
+  </div>
+  <div class="row">
+      <h1>Software</h1>
+      <ul>
+        {% for soft_content in soft_contents %}
+          <div class="col-sm-3">
+            <li><a href="{{url_for('show_content', name=soft_content.title)}}">{{soft_content.title}}</a></li>
+          </div>
+        {% endfor %}
+      </ul>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

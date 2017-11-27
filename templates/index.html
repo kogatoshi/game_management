@@ -1,22 +1,21 @@
 {% extends 'layout.html' %}
 {% block body %}
-  <div class="container">
-    {% if session.user_id %}
-      <h2>ようこそ勇者{{ session.username }}様。</h2>
-      <p></p>
-      <div class="choises">
-        <ul>
-          <li><a href="{{ url_for('home') }}">ゲームの一覧を見てみる。</a></li>
-        </ul>
-      </div>
-    {% else %}
-      <h2>ようこそ！名前はなんですか？</h2>
-      <div class="choises">
-        <ul>
-          <li><a href="{{ url_for('login') }}">名乗る</a></li>
-          <li><a href="{{ url_for('login') }}">名乗らない</a></li>
-        </ul>
-      </div>
-    {% endif %}
-  </div>
+  {% if session.user_id %}
+    <h2>ようこそ勇者{{ session.username }}様。 レベル:{{level}}</h2>
+    <div class="choises">
+      <ul>
+        <li><a href="{{ url_for('home') }}"><div class="choise">ゲームの一覧を見てみる。</div></a></li>
+        <li><a href="{{ url_for('mypage') }}"><div class="choise">装備を整える。</div></a></li>
+        <li><a href="{{ url_for('chat') }}"><div class="choise">仲間と話す。</div></a></li>
+      </ul>
+    </div>
+  {% else %}
+    <h2>ようこそ！勇者様ですか？</h2>
+    <div class="choises">
+      <ul>
+        <li><a href="{{ url_for('login') }}"><div class="choise">勇者だ。（ログイン）</div></a></li>
+        <li><a href="{{ url_for('signup') }}"><div class="choise">勇者になる。（新規登録）</div></a></li>
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}

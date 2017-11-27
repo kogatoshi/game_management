@@ -36,6 +36,14 @@ hard_review_table = Table(
             )
 
 
+soft_review_table = Table(
+                'soft_review',
+                Base.metadata,
+                Column('soft_id', Integer, ForeignKey('games.id')),
+                Column('softreview_id', Integer, ForeignKey('softreview.id'))
+            )
+
+
 hardreview_user_table = Table(
                 'users_hardreviews',
                 Base.metadata,
@@ -52,6 +60,14 @@ softreview_user_table = Table(
             )
 
 
+chat_user_table = Table(
+                'chats_users',
+                Base.metadata,
+                Column('user_id', Integer, ForeignKey('users.id')),
+                Column('chat_id', Integer, ForeignKey('chat.id'))
+            )
+
+
 class Games(Base):
     __tablename__ = 'games'
     id = Column(Integer, primary_key=True)
@@ -63,6 +79,14 @@ class Games(Base):
             uselist=True,
             backref='games',
             secondary=games_hardware_table
+    )
+
+    review = relationship(
+            'Softreview',
+            order_by='Softreview.id',
+            uselist=True,
+            backref='games',
+            secondary=soft_review_table
     )
 
     def __init__(self, title):
@@ -180,4 +204,19 @@ class Hardreview(Base):
             uselist=False,
             backref='hardreview',
             secondary=hardreview_user_table
+        )
+
+
+class Chat(Base):
+    __tablename__ = 'chat'
+    id = Column(Integer, primary_key=True)
+    text = Column(String(1024), nullable=False)
+    datetime = Column(DateTime, default=datetime.now(), nullable=False)
+
+    user = relationship(
+            'User',
+            order_by=User.id,
+            uselist=False,
+            backref='chat',
+            secondary=chat_user_table
     )

@@ -38,6 +38,15 @@ def load_user():
         g.user = models.User.query.get(session['user_id'])
 
 
+@app.context_processor
+def utility_processor():
+    def user_info():
+        user_id = session['user_id']
+        user = db_session.query(models.User).filter_by(id=user_id)
+        return user
+    return dict(user_info=user_info)
+
+
 @app.route('/')
 def top():
     return render_template("index.html")
@@ -85,7 +94,10 @@ def login():
                 return redirect(url_for('manage'))
             else:
                 flash('You were logged in')
-                return redirect(url_for('top'))
+                return render_template(
+                            'index.html',
+                            level=user.level,
+                        )
         else:
             flash('Invalid email or password')
     return render_template('login.html')
@@ -97,20 +109,6 @@ def logout():
     session.pop('user_id', None)
     flash('You were logged out')
     return redirect(url_for('login'))
-
-
-# ソフト・ハードの一覧
-@app.route("/game")
-@login_required
-def game():
-    hard_contents = models.Hardware.query.all()
-    soft_contents = models.Games.query.all()
-    return render_template(
-                "game_list.html",
-                hard_contents=hard_contents,
-                soft_contents=soft_contents,
-                username=auth.username()
-            )
 
 
 @app.route("/signup")
@@ -228,15 +226,25 @@ def show_content_hard(name):
 @app.route("/software/<title>", methods=["GET"])
 @login_required
 def show_content_soft(title):
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
     soft = db_session.query(models.Games).filter_by(title=title).one()
+    done = False
     if soft is None:
         abort(404)
-    return render_template("show_content_soft.html", soft=soft)
+    for sr in soft.review:
+        if user == sr.users:
+            done = True
+    return render_template(
+                "show_content_soft.html",
+                soft=soft,
+                softreview=soft.review,
+                done=done,
+            )
 
 
 # 管理ページ
 @app.route("/manage")
-@login_required
 def manage():
     hard_contents = db_session.query(models.Hardware).all()
     soft_contents = db_session.query(models.Games).all()
@@ -258,9 +266,9 @@ def addsoft():
     if title and hardnumbers:
         game = models.Games(title=title)
         hards = []
-        for hard in hardnumbers:
-            name = db_session.query(models.Hardware).filter_by(id=hard).one()
-            hards.append(name)
+        for hn in hardnumbers:
+            hard = db_session.query(models.Hardware).filter_by(id=hn).one()
+            hards.append(hard)
         game.hardwares.extend(hards)
 
         db_session.add(game)
@@ -317,8 +325,45 @@ def hardreview():
     return redirect("/hardware/%s" % hard_name)
 
 
+@app.route("/softreview", methods=["POST"])
+@login_required
+def softreview():
+    # ユーザー情報取得
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    # if db_session.query(models.Hardreview).filter_by(users=user)
+    soft_name = request.form["softname"]
+    soft = db_session.query(models.Games).filter_by(title=soft_name).one()
+    star = request.form["softReviewStar"]
+    comment = request.form["text"]
+    softreview = models.Softreview(text=comment, star=star, users=user)
+    soft.review.append(softreview)
+    db_session.commit()
+    return redirect("/software/%s" % soft_name)
+
+
+@app.route('/addchat', methods=["POST"])
+@login_required
+def addchat():
+    user_id = session['user_id']
+    user = db_session.query(models.User).filter_by(id=user_id).one()
+    chat_text = request.form["chatText"]
+    addchat = models.Chat(text=chat_text, user=user)
+    db_session.add(addchat)
+    db_session.commit()
+    chat = db_session.query(models.Chat).all()
+    return render_template("chat.html", chat=chat)
+
+
+@app.route('/chat')
+@login_required
+def chat():
+    chat = db_session.query(models.Chat).order_by(asc(models.Chat.datetime))
+    return render_template("chat.html", chat=chat)
+
+
 if __name__ == "__main__":
     app.run(debug=True,
-            host=os.getenv('IP', '0.0.0.0'),
-            port=int(os.getenv('PORT', 4444))
+            host=os.getenv('IP', '127.0.0.1'),
+            port=int(os.getenv('PORT', 1919))
             )

@@ -1,7 +1,19 @@
+#allContents{display:none;}
+#loading{
+	position:absolute;
+	left:50%;
+	top:20%;
+	margin-left:-30px;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   background-image: url('../img/background.png');
+}
+
+#allContents {
+  height: 100%;
 }
 
 header {

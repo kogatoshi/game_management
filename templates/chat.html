@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block body %}
+  <h2>掲示板</h2>
+  <div id='chatForm'>
+    <form action="/addchat" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="text" name="chatText" required/>
+      <button type="submit">話す</button>
+    </form>
+  </div>
+  {% for c in chat %}
+  <div class="chat">
+    <p class="chatInfo">{{c.user.username}} - {{c.datetime}}</p>
+    <p class="chatText">{{c.text}}</p>
+  </div>
+  {% endfor %}
+{% endblock %}
